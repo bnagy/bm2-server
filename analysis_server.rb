@@ -6,10 +6,9 @@
 require 'rubygems'
 require 'eventmachine'
 require 'socket'
-require File.dirname(__FILE__) + '/../bm2-core/em_netstring'
 require File.dirname(__FILE__) + '/../bm2-core/fuzzprotocol'
 require File.dirname(__FILE__) + '/../bm2-core/metafuzz_db'
-require File.dirname(__FILE__) + '/../analysis_fsconn'
+require File.dirname(__FILE__) + '/analysis_fsconn'
 require File.dirname(__FILE__) + '/../bm2-core/objhax'
 
 # This class is a combination DB / analysis server. It connects out to a fuzzserver, to
