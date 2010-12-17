@@ -24,15 +24,15 @@ ARGV.shift # to clear the 'opts' string, what remains is for the Producer class
 # Load the producer script, it MUST define a Producer class, which acts like a Generator
 require OPTS[:producer]
 
-# Instantiate the test case generator, passing opts from the prodclient command line
-ProductionClient.production_generator=Producer.new( ARGV, ProductionClient )
-
 # Basic options for the prodclient
 ProductionClient.setup( 
     'debug'=>OPTS[:debug],
     'poll_interval'=>OPTS[:timeout],
     'queue_name'=>'word'
 )
+
+# Instantiate the test case generator, passing opts from the prodclient command line
+ProductionClient.production_generator=Producer.new( ARGV, ProductionClient )
 
 # Set the fuzzbot options that will be passed through, based on the command line
 ProductionClient.fuzzbot_options={
