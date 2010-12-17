@@ -3,7 +3,7 @@
 # License: The MIT License
 # (See README.TXT or http://www.opensource.org/licenses/mit-license.php for details.)
 
-require File.dirname(__FILE__) + '/../bm2-core/fuzz_server_new'
+require File.dirname(__FILE__) + '/../bm2-core/fuzz_server'
 require 'rubygems'
 require 'trollop'
 
