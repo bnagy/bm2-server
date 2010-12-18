@@ -39,7 +39,7 @@ ProductionClient.fuzzbot_options={
         'clean'=>OPTS[:clean], 
         'filechain'=>OPTS[:filechain],
         'maxchain'=>OPTS[:maxchain],
-        'ignore_exceptions'=>(OPTS[:ignore] ? File.open(OPTS[:ignore], "rb") {|io| io.read}.split : [])
+        'ignore_exceptions'=>(OPTS[:ignore] ? File.open(OPTS[:ignore], "rb") {|io| io.read}.split("\n") : [])
 }
 
 EM.epoll
