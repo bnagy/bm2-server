@@ -90,6 +90,7 @@ class FuzzServerConnection < HarnessComponent
                 msg.chain.each {|chainfile|
                     counter+=1
                     zfs.file.open( "#{counter}.doc", "wb" ) {|ios| ios.write chainfile}
+                    zfs.commit
                 }
             }.commit
         end
