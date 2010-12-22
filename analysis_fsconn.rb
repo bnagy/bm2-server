@@ -93,6 +93,7 @@ class FuzzServerConnection < HarnessComponent
                 }
             }.commit
         end
+        tag=msg.tag
         tag << "ANALYSIS_MD5:#{Digest::MD5.hexdigest(msg.crashfile)}\n"
         tag << "ANALYSIS_TIMESTAMP:#{Time.now}\n"
         tag
