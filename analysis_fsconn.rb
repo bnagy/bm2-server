@@ -13,8 +13,9 @@
 # To be honest, if you don't understand this part, (which is completely fair) 
 # you're better off reading the EventMachine documentation, not mine.
 
-require 'zlib'
-require 'digest/md5'
+require 'zlib' # for crc32
+require 'zip/zipfilesystem' # to write file chains
+require 'digest/md5' # for md5sums
 
 class FuzzServerConnection < HarnessComponent
 
@@ -62,37 +63,52 @@ class FuzzServerConnection < HarnessComponent
         end
     end
 
-    def write_crash_details( crashfile, crashdetail, counter, tag )
-        crash_uuid=tag.match(/^FUZZBOT_CRASH_UUID:(.*)$/)[1]
+    def write_crash_details( msg )
+        crash_uuid=msg.tag.match(/^FUZZBOT_CRASH_UUID:(.*)$/)[1]
         raise RuntimeError unless crash_uuid
-        crashdetail_path=File.join( self.class.work_dir, "#{crash_uuid}.txt")
-        crashfile_path=File.join( self.class.work_dir, "#{crash_uuid}.raw")
-        crashtag_path=File.join( self.class.work_dir, "#{crash_uuid}.tag")
-        if File.exists?( crashdetail_path) || File.exists?( crashfile_path ) || File.exists?( crashtag_path )
-            File.open("analysisfsconn_error.log", "wb+") {|io| io.puts tag; io.puts crashdetail_path }
-            raise RuntimeError, "#{COMPONENT}: Error - was about to clobber an existing file!!"
+        paths=[]
+        paths << (crashdetail_path=File.join( self.class.work_dir, "#{crash_uuid}.txt"))
+        paths << (crashfile_path=File.join( self.class.work_dir, "#{crash_uuid}.doc"))
+        paths << (crashtag_path=File.join( self.class.work_dir, "#{crash_uuid}.tag"))
+        unless msg.chain.empty?
+            paths << (crashchain_path=File.join( self.class.work_dir, "#{crash_uuid}.chain.zip"))
         end
-        tag << "ANALYSIS_MD5:#{Digest::MD5.hexdigest(crashfile)}\n"
-        tag << "ANALYSIS_TIMESTAMP:#{Time.now}\n"
+        paths.each {|path|
+            if File.exists? path
+                File.open("analysisfsconn_error.log", "wb+") {|io| io.puts tag; io.puts crashdetail_path }
+                raise RuntimeError, "#{COMPONENT}: Error - was about to clobber an existing file!!"
+            end
+        }
         # Here is where you would also connect to a DB, if you want to
         # do DB pushes as part of the workflow (instead of doing it later)
-        File.open(crashdetail_path, 'wb+') {|fh| fh.write crashdetail}
-        File.open(crashfile_path, 'wb+') {|fh| fh.write crashfile}
-        File.open(crashtag_path, 'wb+') {|fh| fh.write tag}
+        File.open(crashdetail_path, 'wb+') {|fh| fh.write msg.crashdetail}
+        File.open(crashfile_path, 'wb+') {|fh| fh.write msg.crashfile}
+        File.open(crashtag_path, 'wb+') {|fh| fh.write msg.tag}
+        unless msg.chain.empty?
+            counter=0
+            Zip::ZipFile.new( crashtag_path, Zip::ZipFile::CREATE ) {|zfs|
+                msg.chain.each {|chainfile|
+                    counter+=1
+                    zfs.file.open( "#{counter}.doc", "wb" ) {|ios| ios.write chainfile}
+                }
+            }
+        end
+        tag << "ANALYSIS_MD5:#{Digest::MD5.hexdigest(msg.crashfile)}\n"
+        tag << "ANALYSIS_TIMESTAMP:#{Time.now}\n"
         tag
     end
 
     def handle_test_result( msg )
         cancel_idle_loop
+        @counter+=1 # Stands in for the real DB id
         if msg.result=='crash'
             if Zlib.crc32(msg.crashfile)==msg.crc32
-                @counter+=1
                 if msg.tag =~ /REPRO/
                     # check tags with old msg, bin appropriately.
                     # NOT IMPLEMENTED
                 else
                     add_to_trace_queue( msg.crashfile, @counter, msg.crc32, msg.tag)
-                    tag=write_crash_details( msg.crashfile, msg.crashdetail, @counter, msg.tag )
+                    tag=write_crash_details( msg )
                     send_ack( msg.ack_id, 'db_id'=>@counter, 'tag'=>tag )
                     # send to repro client
                     # NOT IMPLEMENTED
@@ -101,7 +117,6 @@ class FuzzServerConnection < HarnessComponent
                 raise RuntimeError, "#{COMPONENT}: CRC32 mismatch in crashfile!"
             end
         else
-            @counter+=1 # Stands in for the real DB id
             send_ack( msg.ack_id, 'db_id'=>@counter, 'tag'=>msg.tag )
         end
         start_idle_loop( 'verb'=>'db_ready' )
