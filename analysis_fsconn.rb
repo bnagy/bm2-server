@@ -85,6 +85,7 @@ class FuzzServerConnection < HarnessComponent
         File.open(crashfile_path, 'wb+') {|fh| fh.write msg.crashfile}
         File.open(crashtag_path, 'wb+') {|fh| fh.write msg.tag}
         unless msg.chain.empty?
+            warn msg.chain.map {|chainfile| chainfile.size}
             counter=0
             Zip::ZipFile.new( crashchain_path, Zip::ZipFile::CREATE ) {|zfs|
                 msg.chain.each {|chainfile|
