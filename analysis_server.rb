@@ -30,7 +30,7 @@ class AnalysisServer < HarnessComponent
     DEFAULT_CONFIG={
         'listen_ip'=>"0.0.0.0",
         'listen_port'=>10002,
-        'poll_interval'=>10,
+        'poll_interval'=>20,
         'debug'=>false,
         'work_dir'=>File.expand_path('~/analysisserver'),
         'result_db_url'=>'postgres://becks/metafuzz_resultdb',
