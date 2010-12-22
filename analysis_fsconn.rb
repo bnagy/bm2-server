@@ -85,15 +85,14 @@ class FuzzServerConnection < HarnessComponent
         File.open(crashfile_path, 'wb+') {|fh| fh.write msg.crashfile}
         File.open(crashtag_path, 'wb+') {|fh| fh.write msg.tag}
         unless msg.chain.empty?
-            warn msg.chain.map {|chainfile| chainfile.size}
             counter=0
-            Zip::ZipFile.new( crashchain_path, Zip::ZipFile::CREATE ) {|zfs|
-                msg.chain.each {|chainfile|
-                    counter+=1
-                    $stderr.puts chainfile.size
-                    zfs.file.open( "#{counter}.doc", "wb" ) {|ios| ios.write chainfile}
-                }
-            }.commit
+            zf=Zip::ZipFile.new( crashchain_path, Zip::ZipFile::CREATE )
+            msg.chain.each {|chainfile|
+                counter+=1
+                zf.file.open( "#{counter}.doc", "wb" ) {|ios| ios.write chainfile}
+            }
+            zf.commit
+            zf.close
         end
         tag=msg.tag
         tag << "ANALYSIS_MD5:#{Digest::MD5.hexdigest(msg.crashfile)}\n"
