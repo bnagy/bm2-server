@@ -90,7 +90,7 @@ class FuzzServerConnection < HarnessComponent
             Zip::ZipFile.new( crashchain_path, Zip::ZipFile::CREATE ) {|zfs|
                 msg.chain.each {|chainfile|
                     counter+=1
-                    warn chainfile.size
+                    $stderr.puts chainfile.size
                     zfs.file.open( "#{counter}.doc", "wb" ) {|ios| ios.write chainfile}
                 }
             }.commit
