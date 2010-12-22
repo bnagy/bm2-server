@@ -86,7 +86,7 @@ class FuzzServerConnection < HarnessComponent
         File.open(crashtag_path, 'wb+') {|fh| fh.write msg.tag}
         unless msg.chain.empty?
             counter=0
-            Zip::ZipFile.new( crashtag_path, Zip::ZipFile::CREATE ) {|zfs|
+            Zip::ZipFile.new( crashchain_path, Zip::ZipFile::CREATE ) {|zfs|
                 msg.chain.each {|chainfile|
                     counter+=1
                     zfs.file.open( "#{counter}.doc", "wb" ) {|ios| ios.write chainfile}
