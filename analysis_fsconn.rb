@@ -75,7 +75,7 @@ class FuzzServerConnection < HarnessComponent
         end
         paths.each {|path|
             if File.exists? path
-                File.open("analysisfsconn_error.log", "wb+") {|io| io.puts tag; io.puts crashdetail_path }
+                File.open("analysisfsconn_error.log", "wb+") {|io| io.puts msg.tag; io.puts crashdetail_path }
                 raise RuntimeError, "#{COMPONENT}: Error - was about to clobber an existing file!!"
             end
         }
