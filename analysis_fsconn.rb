@@ -68,7 +68,7 @@ class FuzzServerConnection < HarnessComponent
         raise RuntimeError unless crash_uuid
         paths=[]
         paths << (crashdetail_path=File.join( self.class.work_dir, "#{crash_uuid}.txt"))
-        paths << (crashfile_path=File.join( self.class.work_dir, "#{crash_uuid}.doc"))
+        paths << (crashfile_path=File.join( self.class.work_dir, "#{crash_uuid}.do"))
         paths << (crashtag_path=File.join( self.class.work_dir, "#{crash_uuid}.tag"))
         unless msg.chain.empty?
             paths << (crashchain_path=File.join( self.class.work_dir, "#{crash_uuid}.chain.zip"))
@@ -91,7 +91,7 @@ class FuzzServerConnection < HarnessComponent
                     counter+=1
                     zfs.file.open( "#{counter}.doc", "wb" ) {|ios| ios.write chainfile}
                 }
-            }
+            }.commit
         end
         tag << "ANALYSIS_MD5:#{Digest::MD5.hexdigest(msg.crashfile)}\n"
         tag << "ANALYSIS_TIMESTAMP:#{Time.now}\n"
