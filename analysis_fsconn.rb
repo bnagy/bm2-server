@@ -68,7 +68,7 @@ class FuzzServerConnection < HarnessComponent
         raise RuntimeError unless crash_uuid
         paths=[]
         paths << (crashdetail_path=File.join( self.class.work_dir, "#{crash_uuid}.txt"))
-        paths << (crashfile_path=File.join( self.class.work_dir, "#{crash_uuid}.do"))
+        paths << (crashfile_path=File.join( self.class.work_dir, "#{crash_uuid}.doc"))
         paths << (crashtag_path=File.join( self.class.work_dir, "#{crash_uuid}.tag"))
         unless msg.chain.empty?
             paths << (crashchain_path=File.join( self.class.work_dir, "#{crash_uuid}.chain.zip"))

@@ -73,12 +73,15 @@ results=Hash.new {|hsh, k| hsh[k]=[0,"", ""]}
 summary=Hash.new {|hsh, k| hsh[k]=0}
 
 Dir.glob(pattern, File::FNM_DOTMATCH).each {|fn|
-    contents=File.open(fn, "rb") {|ios| ios.read}
+    contents=File.open(fn, "rb") {|ios| ios.read}.split(/frobozz/).last
     if hsh=DetailParser.hash( contents )
         results[hsh][0]+=1
-        crashfile1=fn.sub('.txt','.raw')
-        if File.exists? crashfile1
-            file=crashfile1
+        if File.exists? fn.sub('.txt','.chain.zip')
+            file=fn.sub('.txt','.chain.zip')
+        elsif File.exists? fn.sub('.txt','.doc')
+            file=fn.sub('.txt','.doc')
+        elsif File.exists? fn.sub('.txt','.raw')
+            file=fn.sub('.txt','.raw')
         else
             file="<missing?>"
         end
