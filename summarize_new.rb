@@ -56,7 +56,7 @@ Dir.glob(pattern, File::FNM_DOTMATCH).each {|fn|
     contents=File.open(fn, "rb") {|ios| ios.read}.split(/frobozz/).last
     exception=Detail.new( contents )
     
-    if hsh=exception.major_hash
+    if not (hsh=exception.major_hash).empty?
         if File.exists? fn.sub('.txt','.chain.zip')
             file=fn.sub('.txt','.chain.zip')
         elsif File.exists? fn.sub('.txt','.doc')
