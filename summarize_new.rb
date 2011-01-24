@@ -70,7 +70,8 @@ Dir.glob(pattern, File::FNM_DOTMATCH).each {|fn|
         instructions=exception.disassembly
         fault=instructions[0][1]
         affected_registers=fault.scan(/e../)
-        affected_registers=affected_registers.map {|reg| "#{reg}=#{exception.registers[reg]}"}.join(',')
+        reg_hsh=Hash[*(exception.registers.flatten)]
+        affected_registers=affected_registers.map {|reg| "#{reg}=#{reg_hsh[reg]}"}.join(',')
         results[hsh][:affected_regs][affected_registers]+=1
         results[hsh][:instructions]=instructions.map {|a| a[1]}.join("\n")
         summary[exception.classification]+=1
