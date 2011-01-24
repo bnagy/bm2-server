@@ -77,7 +77,7 @@ Dir.glob(pattern, File::FNM_DOTMATCH).each {|fn|
         summary[exception.classification]+=1
         summary["total"]+=1
         results[hsh][:sample_registers]=exception.registers.map {|a| a.join('=')}.join(' ')
-        results[hsh][:stack]=exception.stack_trace[0..3].map {|a| a[1]}.join("\n")
+        stack=exception.stack_trace[0..3].map {|a| a[1]}.join("\n")
         results[hsh][:stack]="-----STACK-------\n" << stack << "\n--------------------"
     end
 }
