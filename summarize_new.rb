@@ -49,7 +49,7 @@ end
 
 # get all detail files in the SOURCE_PATH
 pattern=File.join(SOURCE_PATH, "*.txt")
-results=Hash.new {|hsh, k| hsh[k]=Hash.new {|h,k| h[k]=0}}
+results=Hash.new {|hsh, k| hsh[k]=Hash.new {|h,k| h[k]=Hash.new {|h,k| h[k]=0}}}
 summary=Hash.new {|hsh, k| hsh[k]=0}
 
 Dir.glob(pattern, File::FNM_DOTMATCH).each {|fn|
