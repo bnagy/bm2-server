@@ -56,7 +56,7 @@ Dir.glob(pattern, File::FNM_DOTMATCH).each {|fn|
     contents=File.open(fn, "rb") {|ios| ios.read}.split(/frobozz/).last
     exception=Detail.new( contents )
     
-    if not (hsh=exception.major_hash).empty?
+    if not (hsh=exception.faulting_instruction).empty?
         if File.exists? fn.sub('.txt','.chain.zip')
             file=fn.sub('.txt','.chain.zip')
         elsif File.exists? fn.sub('.txt','.doc')
@@ -69,7 +69,7 @@ Dir.glob(pattern, File::FNM_DOTMATCH).each {|fn|
         results[hsh][:descs]["#{exception.short_desc} - #{exception.classification}"]+=1
         instructions=exception.disassembly
         fault=instructions[0][1]
-        affected_registers=fault.scan(/e../)
+        affected_registers=fault.scan(/e[abcd]x|e[sd]i|e[sb]p/)
         reg_hsh=Hash[*(exception.registers.flatten)]
         affected_registers=affected_registers.map {|reg| "#{reg}=#{reg_hsh[reg]}"}.join(',')
         results[hsh][:affected_regs][affected_registers]+=1
